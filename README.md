@@ -1,3 +1,4 @@
+1-
 Install kubernetes with ansible:
  sudo apt update
  sudo apt install git python3 python3-pip -y
@@ -13,7 +14,10 @@ vi inventory/mycluster/group_vars/k8s_cluster/addons.yml
 .
 .
 .
+
 ansible-playbook -i inventory/mycluster/hosts.yaml  --become  --user=root --become-user=root cluster.yml
+
+2-
 
 install postgresql pod(single):
 helm repo add bitnami https://charts.bitnami.com/bitnami
@@ -42,6 +46,8 @@ rm ${BACKUP_FILE}
 
 if total process in one line:
 export PG_HOST="my-postgres-postgresql" PG_PORT="5432" PG_USER="postgres" PG_PASSWORD="mysecretpassword" PG_DB="mydb" MINIO_ACCESS_KEY="<your-minio-access-key>" MINIO_SECRET_KEY="<your-minio-secret-key>" MINIO_BUCKET="mybucket" BACKUP_DIR="/tmp/backups" BACKUP_FILE="${BACKUP_DIR}/$(date +%F)-${PG_DB}.sql" && mkdir -p ${BACKUP_DIR} && PGPASSWORD=${PG_PASSWORD} pg_dump -h ${PG_HOST} -U ${PG_USER} ${PG_DB} > ${BACKUP_FILE} && mc alias set myminio http://<minio-server-ip>:9000 ${MINIO_ACCESS_KEY} ${MINIO_SECRET_KEY} && mc cp ${BACKUP_FILE} myminio/${MINIO_BUCKET}/backups/ && rm ${BACKUP_FILE}
+
+3-
 
 install prometheus & grafana:
  helm install prometheus prometheus-community/kube-prometheus-stack   --namespace monitoring   --set prometheus.service.type=NodePort   --set prometheus.service.nodePort=30090   --set grafana.service.type=NodePort   --set grafana.service.nodePort=30091
