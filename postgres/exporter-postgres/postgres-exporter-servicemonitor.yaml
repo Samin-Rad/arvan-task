@@ -1,0 +1,14 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: postgres-exporter-servicemonitor
+  namespace: monitoring
+spec:
+  selector:
+    matchLabels:
+      app: prometheus-postgres-exporter
+  endpoints:
+    - port: metrics
+      path: /metrics
+      interval: 30s
+

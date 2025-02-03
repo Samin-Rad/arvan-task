@@ -1,0 +1,29 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: postgres-backup
+spec:
+  schedule: "0 2 * * *"  
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: postgres-backup
+              image: bitnami/postgresql:latest
+              command: ["/bin/bash", "-c", "/backup.sh"]
+              env:
+                - name: POSTGRESQL_PASSWORD
+                  value: "MyPassword"
+                - name: POSTGRESQL_USER
+                  value: "postgres"
+                - name: POSTGRESQL_DATABASE
+                  value: "mydatabase"
+              volumeMounts:
+                - name: backup-volume
+                  mountPath: /backup
+          restartPolicy: OnFailure
+          volumes:
+            - name: backup-volume
+              emptyDir: {}
+

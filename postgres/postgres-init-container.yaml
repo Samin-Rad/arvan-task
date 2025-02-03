@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-postgres-pod
+spec:
+  dnsPolicy: Default  
+  initContainers:
+    - name: install-mc
+      image: ubuntu:latest
+      command:
+        - "/bin/bash"
+        - "-c"
+        - |
+          export DEBIAN_FRONTEND=noninteractive
+          apt update && apt install -y wget &&
+          wget https://dl.min.io/client/mc/release/linux-amd64/mc -O /mc &&
+          chmod +x /mc &&
+          mv /mc /shared/mc &&
+          chmod -R 777 /etc/resolv.conf &&
+          echo "Init Container finished successfully!" &&
+          exit 0
+      volumeMounts:
+        - name: shared-tools
+          mountPath: /shared
+  containers:
+    - name: my-postgres-container
+      image: bitnami/postgresql:latest
+      command: ["/bin/bash", "-c", "sleep infinity"]
+      env:
+        - name: POSTGRESQL_PASSWORD
+          value: "MyPassword"
+        - name: POSTGRESQL_USER
+          value: "postgres"
+        - name: POSTGRESQL_DATABASE
+          value: "mydatabase"
+      volumeMounts:
+        - name: shared-tools
+          mountPath: /usr/local/bin
+  volumes:
+    - name: shared-tools
+      emptyDir: {}
+
